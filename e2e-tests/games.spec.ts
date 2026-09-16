@@ -24,6 +24,37 @@ test.describe('Game Listing and Navigation', () => {
     });
   });
 
+  test('should filter games by category and publisher', async ({ page }) => {
+    await page.goto('/');
+
+    const categoryFilter = page.getByTestId('category-filter');
+    const publisherFilter = page.getByTestId('publisher-filter');
+
+    await expect(categoryFilter).toBeVisible();
+    await expect(publisherFilter).toBeVisible();
+
+    await categoryFilter.selectOption({ label: 'Strategy' });
+    await expect(page.locator('[data-testid="game-card"]:not(.hidden)')).toHaveCount(4);
+
+    await publisherFilter.selectOption({ label: 'CodeForge Studios' });
+    await expect(page.locator('[data-testid="game-card"]:not(.hidden)')).toHaveCount(1);
+    await expect(page.getByTestId('filtered-empty-state')).toBeHidden();
+  });
+
+  test('should show an empty state when filters match no games', async ({ page }) => {
+    await page.goto('/');
+
+    await page.getByTestId('category-filter').selectOption({ label: 'Strategy' });
+    await page.getByTestId('publisher-filter').evaluate((select) => {
+      Object.defineProperty(select, 'value', { configurable: true, value: '99999' });
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    await expect(page.getByTestId('games-grid')).toBeHidden();
+    await expect(page.getByTestId('filtered-empty-state')).toBeVisible();
+    await expect(page.getByTestId('filtered-empty-state')).toContainText('No games match the selected filters.');
+  });
+
   test('should navigate to correct game details page when clicking on a game', async ({ page }) => {
     let gameId: string | null;
     let gameTitle: string | null;
