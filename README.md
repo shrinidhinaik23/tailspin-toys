@@ -73,6 +73,8 @@ npm run lint
 
 ESLint is also run automatically in CI on pull requests to `main`.
 
+The site includes a **High contrast** control in the header. It applies a stronger black-and-white color scheme, exposes its state with `aria-pressed`, and stores the preference in `localStorage` so it remains enabled after reloads.
+
 ## Type checking
 
 The project runs on **TypeScript 7** (the native Go compiler, `tsgo`) for type checking, adopted side-by-side via the [`@typescript/native-preview`](https://www.npmjs.com/package/@typescript/native-preview) package. The classic `typescript` package is intentionally kept at v6 so ESLint + `typescript-eslint` and `astro check` keep working unchanged — TypeScript 7's programmatic API isn't ready for those tools yet.
